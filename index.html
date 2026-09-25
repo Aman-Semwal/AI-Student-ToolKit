@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Toolkit</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon"><i class="ti ti-sparkles"></i></div>
+                <div class="brand-text">
+                    <span>STUDIO / 01</span>
+                    <h2>Student<br>Toolkit</h2>
+                </div>
+            </div>
+
+            <div class="sidebar-label">Workspace</div>
+            <div class="sidebar-nav-container">
+                <a href="#" class="nav-item active" data-target="dashboard">
+                    <i class="ti ti-layout-dashboard"></i><span>Overview</span><kbd>01</kbd>
+                </a>
+                <a href="#" class="nav-item" onclick="openTool('resume')">
+                    <i class="ti ti-file-text"></i><span>Resume Builder</span>
+                </a>
+                <a href="#" class="nav-item" onclick="openTool('notes')">
+                    <i class="ti ti-notes"></i><span>Notes Generator</span>
+                </a>
+                <a href="#" class="nav-item" onclick="openTool('presentation')">
+                    <i class="ti ti-presentation"></i><span>Presentations</span>
+                </a>
+                <a href="#" class="nav-item" onclick="openTool('mindmap')">
+                    <i class="ti ti-sitemap"></i><span>Mind Map</span>
+                </a>
+                <a href="#" class="nav-item" onclick="openTool('dashboard_data')">
+                    <i class="ti ti-table"></i><span>Sheets Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" onclick="openTool('quiz')">
+                    <i class="ti ti-checklist"></i><span>Quiz Generator</span>
+                </a>
+                <a href="#" class="nav-item" onclick="openTool('doubt')">
+                    <i class="ti ti-message-chatbot"></i><span>Tutor Chat</span>
+                </a>
+                <a href="#" class="nav-item" onclick="openTool('flashcards')">
+                    <i class="ti ti-cards"></i><span>Flashcards</span>
+                </a>
+                <a href="#" class="nav-item" onclick="openTool('planner')">
+                    <i class="ti ti-calendar-event"></i><span>Study Planner</span>
+                </a>
+                <a href="#" class="nav-item" onclick="openTool('photo')">
+                    <i class="ti ti-camera"></i><span>Photo Summarizer</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="api-status"><span></span><div><strong>Private workspace</strong><small>Client-side AI enabled</small></div></div>
+                <a href="#" class="nav-item" data-target="settings">
+                    <i class="ti ti-settings"></i><span>Settings</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Area -->
+        <div class="main-area">
+            
+            <div class="content-wrapper" id="mainContentArea">
+                
+                <div id="dashboard">
+                    <div class="top-header">
+                        <div class="eyebrow"><span class="eyebrow-dot"></span> Your learning command center <span class="eyebrow-line"></span><span>10 AI tools</span></div>
+                        <div class="header-row"><div><h1 class="title">Make space for<br><em>better thinking.</em></h1><p class="description">A focused toolkit for turning rough ideas into clear, useful work.</p></div><div class="date-chip"><i class="ti ti-sun-high"></i><span><strong id="todayLabel">Today</strong><small>Ready when you are</small></span></div></div>
+                    </div>
+
+                    <div class="spotlight-card">
+                        <div class="spotlight-copy"><span class="spotlight-kicker">Recommended starting point</span><h2>Turn a blank page<br>into a strong resume.</h2><p>Shape your experience into a story recruiters remember, with a little help from AI.</p><button class="spotlight-btn" onclick="openTool('resume')">Open Resume Builder <i class="ti ti-arrow-up-right"></i></button></div>
+                        <div class="spotlight-art"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="resume-paper"><span>YOUR NAME</span><b>Product designer</b><i></i><i></i><i></i></div><div class="spark spark-one">✦</div><div class="spark spark-two">✧</div></div>
+                    </div>
+
+                    <div class="section-heading"><div><span class="section-index">01 /</span><h3>Choose your next move</h3></div><span class="section-note">Built for deep work, not busywork</span></div>
+
+                    <div class="tools-grid">
+                        <!-- Tool 1 -->
+                        <div class="tool-card featured" data-tool="resume" onclick="openTool('resume')">
+                            <div class="tag">Start here <i class="ti ti-arrow-up-right"></i></div>
+                            <div class="tool-icon-wrapper"><i class="ti ti-file-text"></i></div>
+                            <div class="tool-info">
+                                <h4>Resume builder</h4>
+                                <p>Form to polished resume</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Tool 2 -->
+                        <div class="tool-card" data-tool="notes" onclick="openTool('notes')">
+                            <div class="tool-icon-wrapper"><i class="ti ti-notes"></i></div>
+                            <div class="tool-info">
+                                <h4>Notes generator</h4>
+                                <p>Text to study notes</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Tool 3 -->
+                        <div class="tool-card" data-tool="presentation" onclick="openTool('presentation')">
+                            <div class="tool-icon-wrapper"><i class="ti ti-presentation"></i></div>
+                            <div class="tool-info">
+                                <h4>Presentations</h4>
+                                <p>Topic to slide deck</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Tool 4 -->
+                        <div class="tool-card" data-tool="mindmap" onclick="openTool('mindmap')">
+                            <div class="tool-icon-wrapper"><i class="ti ti-sitemap"></i></div>
+                            <div class="tool-info">
+                                <h4>Mind map</h4>
+                                <p>Syllabus to topic tree</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Tool 5 -->
+                        <div class="tool-card" data-tool="dashboard_data" onclick="openTool('dashboard_data')">
+                            <div class="tool-icon-wrapper"><i class="ti ti-table"></i></div>
+                            <div class="tool-info">
+                                <h4>Sheets dashboard</h4>
+                                <p>Live spreadsheet data</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Tool 6 -->
+                        <div class="tool-card" data-tool="quiz" onclick="openTool('quiz')">
+                            <div class="tool-icon-wrapper"><i class="ti ti-checklist"></i></div>
+                            <div class="tool-info">
+                                <h4>Quiz generator</h4>
+                                <p>Notes to scored quiz</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Tool 7 -->
+                        <div class="tool-card" data-tool="doubt" onclick="openTool('doubt')">
+                            <div class="tool-icon-wrapper"><i class="ti ti-message-chatbot"></i></div>
+                            <div class="tool-info">
+                                <h4>Tutor chat</h4>
+                                <p>Ask, get explanations</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Tool 8 -->
+                        <div class="tool-card" data-tool="flashcards" onclick="openTool('flashcards')">
+                            <div class="tool-icon-wrapper"><i class="ti ti-cards"></i></div>
+                            <div class="tool-info">
+                                <h4>Flashcards</h4>
+                                <p>Flip to reveal answers</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Tool 9 -->
+                        <div class="tool-card" data-tool="planner" onclick="openTool('planner')">
+                            <div class="tool-icon-wrapper"><i class="ti ti-calendar-event"></i></div>
+                            <div class="tool-info">
+                                <h4>Study planner</h4>
+                                <p>Weekly timetable</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Tool 10 -->
+                        <div class="tool-card" data-tool="photo" onclick="openTool('photo')">
+                            <div class="tool-icon-wrapper"><i class="ti ti-camera"></i></div>
+                            <div class="tool-info">
+                                <h4>Photo summarizer</h4>
+                                <p>OCR, then AI summary</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden" id="toolWorkspace">
+                    <button class="back-btn" onclick="goBack()"><i class="ti ti-arrow-left"></i> Overview</button>
+                    <div class="workspace-heading"><div class="workspace-icon" id="workspaceIcon"><i class="ti ti-wand"></i></div><div><div class="eyebrow" id="workspaceEyebrow">AI WORKSPACE</div><h1 class="title" id="workspaceTitle">Tool Name</h1><p class="description" id="workspaceDescription">A focused space for your next idea.</p></div></div>
+                    <div class="workspace-layout">
+                        <div class="input-panel">
+                            <div class="panel-heading"><div><span class="panel-kicker">Your brief</span><h3 id="toolInputLabel">Input</h3></div><span class="step-badge">01</span></div>
+                            <div id="toolControls" class="tool-controls"></div>
+                            <textarea id="toolInput" placeholder="Enter your prompt..."></textarea>
+                            <div class="input-footer"><span id="inputHint">Be as specific as you like.</span><span id="inputCounter">0 / 4000</span></div>
+                            <button class="primary-btn" id="runToolBtn"><i class="ti ti-sparkles"></i> <span id="runButtonText">Generate</span><i class="ti ti-arrow-up-right btn-arrow"></i></button>
+                            <div class="hidden tool-loader" id="toolLoader"><span></span> Generating a thoughtful result...</div>
+                        </div>
+                        <div class="output-panel">
+                            <div class="panel-heading"><div><span class="panel-kicker">Your output</span><h3>Result</h3></div><span class="live-badge"><span></span> Live</span></div>
+                            <div class="output-content" id="toolOutput">
+                                <div class="empty-state"><div class="empty-icon"><i class="ti ti-sparkles"></i></div><strong>Your next draft starts here.</strong><p>Give the tool a little context and your result will appear in this space.</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden" id="settingsView">
+                    <div class="eyebrow"><span class="eyebrow-dot"></span> Workspace preferences</div><h1 class="title">Settings</h1><p class="description settings-lead">Your key stays in this browser and is sent directly to Google Gemini. Nothing passes through a server.</p>
+                    <div class="settings-card"><div class="settings-card-top"><div class="settings-icon"><i class="ti ti-key"></i></div><div><h3>Bring your own intelligence</h3><p>Connect an AI provider to unlock every tool in your private workspace.</p></div><span class="secure-label"><i class="ti ti-lock"></i> Local only</span></div><div class="field-group"><label for="providerSelect">AI provider</label><select id="providerSelect" class="custom-select"><option value="gemini">Google Gemini</option><option value="openai">OpenAI-compatible</option></select></div><div class="field-group"><label for="modelInput">Model</label><input id="modelInput" class="settings-text-input" placeholder="gemini-2.0-flash" autocomplete="off"><small>Use a model available to the selected provider. For OpenAI-compatible APIs, the endpoint is configured in the model value as `model` and uses the standard OpenAI endpoint.</small></div><div class="field-group"><label for="apiKeyInput">API key</label><div class="key-input"><i class="ti ti-key"></i><input type="password" id="apiKeyInput" placeholder="Your provider API key" autocomplete="off"><button type="button" id="toggleKeyBtn" title="Show API key"><i class="ti ti-eye"></i></button></div><small>Your key is stored only in this browser and sent directly to the selected provider.</small></div><button class="primary-btn" id="saveSettingsBtn"><i class="ti ti-device-floppy"></i> Save connection</button></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">Action completed successfully!</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+    <script src="sessionApi.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
