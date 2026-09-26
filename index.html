@@ -52,6 +52,9 @@
                 <a href="#" class="nav-item" onclick="openTool('photo')">
                     <i class="ti ti-camera"></i><span>Photo Summarizer</span>
                 </a>
+                <a href="#" class="nav-item" data-target="settings">
+                    <i class="ti ti-settings"></i><span style="display:inline;">Settings</span>
+                </a>
             </div>
 
             <div class="sidebar-footer">
@@ -171,6 +174,15 @@
                                 <p>OCR, then AI summary</p>
                             </div>
                         </div>
+                        
+                        <!-- Settings -->
+                        <div class="tool-card" data-tool="settings" onclick="document.querySelector('.nav-item[data-target=\'settings\']').click()">
+                            <div class="tool-icon-wrapper" style="background:#fff0e9;"><i class="ti ti-settings" style="color:#bd5945;"></i></div>
+                            <div class="tool-info">
+                                <h4>Settings</h4>
+                                <p>Configure API Key</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -196,8 +208,9 @@
                 </div>
 
                 <div class="hidden" id="settingsView">
-                    <div class="eyebrow"><span class="eyebrow-dot"></span> Workspace preferences</div><h1 class="title">Settings</h1><p class="description settings-lead">Your key stays in this browser and is sent directly to Google Gemini. Nothing passes through a server.</p>
-                    <div class="settings-card"><div class="settings-card-top"><div class="settings-icon"><i class="ti ti-key"></i></div><div><h3>Bring your own intelligence</h3><p>Connect an AI provider to unlock every tool in your private workspace.</p></div><span class="secure-label"><i class="ti ti-lock"></i> Local only</span></div><div class="field-group"><label for="providerSelect">AI provider</label><select id="providerSelect" class="custom-select"><option value="gemini">Google Gemini</option><option value="openai">OpenAI-compatible</option></select></div><div class="field-group"><label for="modelInput">Model</label><input id="modelInput" class="settings-text-input" placeholder="gemini-2.0-flash" autocomplete="off"><small>Use a model available to the selected provider. For OpenAI-compatible APIs, the endpoint is configured in the model value as `model` and uses the standard OpenAI endpoint.</small></div><div class="field-group"><label for="apiKeyInput">API key</label><div class="key-input"><i class="ti ti-key"></i><input type="password" id="apiKeyInput" placeholder="Your provider API key" autocomplete="off"><button type="button" id="toggleKeyBtn" title="Show API key"><i class="ti ti-eye"></i></button></div><small>Your key is stored only in this browser and sent directly to the selected provider.</small></div><button class="primary-btn" id="saveSettingsBtn"><i class="ti ti-device-floppy"></i> Save connection</button></div>
+                    <div class="eyebrow"><span class="eyebrow-dot"></span> Workspace preferences</div><h1 class="title">Settings</h1><p class="description settings-lead">Your key stays in this browser session and is sent directly to your chosen AI provider. Nothing passes through a server.</p>
+                    <div class="settings-card"><div class="settings-card-top"><div class="settings-icon"><i class="ti ti-key"></i></div><div><h3>Bring your own intelligence</h3><p>Connect an AI provider to unlock every tool in your private workspace.</p></div><span class="secure-label"><i class="ti ti-lock"></i> Session only</span></div><div class="field-group"><label for="providerSelect">AI provider</label><select id="providerSelect" class="custom-select"><option value="gemini">Google Gemini</option><option value="anthropic">Anthropic (Claude)</option><option value="openai">OpenAI-compatible</option></select></div><div class="field-group"><label for="modelInput">Model</label><select id="modelInput" class="custom-select"></select><small>Use a model available to the selected provider. The model list updates based on the provider.</small></div><div class="field-group"><label for="apiKeyInput">API key</label><div class="key-input"><i class="ti ti-key"></i><input type="password" id="apiKeyInput" placeholder="Your provider API key" autocomplete="off"><button type="button" id="toggleKeyBtn" title="Show API key"><i class="ti ti-eye"></i></button></div><small>Your key is stored only for this browser session and sent directly to the selected provider.</small></div><button class="primary-btn" id="saveSettingsBtn"><i class="ti ti-device-floppy"></i> Save connection</button></div>
+
                 </div>
 
             </div>

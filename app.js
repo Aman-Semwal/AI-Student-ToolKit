@@ -30,9 +30,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     dashboardView.classList.add('hidden');
                     toolWorkspace.classList.add('hidden');
                     settingsView.classList.remove('hidden');
-                    document.getElementById('apiKeyInput').value = localStorage.getItem('geminiApiKey') || '';
-                    document.getElementById('providerSelect').value = localStorage.getItem('aiProvider') || 'gemini';
-                    document.getElementById('modelInput').value = localStorage.getItem('aiModel') || 'gemini-2.0-flash';
+                    document.getElementById('apiKeyInput').value = sessionStorage.getItem('geminiApiKey') || '';
+                    const savedProvider = sessionStorage.getItem('aiProvider') || 'gemini';
+                    const savedModel = sessionStorage.getItem('aiModel') || 'gemini-3.5-flash';
+                    document.getElementById('providerSelect').value = savedProvider;
+                    updateModelDropdown(savedProvider, savedModel);
                 }
             }
         });
@@ -46,10 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const provider = document.getElementById('providerSelect').value;
             const model = document.getElementById('modelInput').value.trim();
             if (!apiKey || !model) { showToast('Provider, model, and API key are required.', true); return; }
-            localStorage.setItem('geminiApiKey', apiKey);
-            localStorage.setItem('aiProvider', provider);
-            localStorage.setItem('aiModel', model);
-            showToast('AI connection saved locally.');
+            sessionStorage.setItem('geminiApiKey', apiKey);
+            sessionStorage.setItem('aiProvider', provider);
+            sessionStorage.setItem('aiModel', model);
+            showToast('AI connection saved for this session.');
         });
     }
 
@@ -64,11 +66,59 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const providerSelect = document.getElementById('providerSelect');
+    if (providerSelect) {
+        providerSelect.addEventListener('change', (e) => {
+            updateModelDropdown(e.target.value);
+        });
+    }
+
+    // Auto-detect provider from API key prefix
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    if (apiKeyInput) {
+        apiKeyInput.addEventListener('input', () => {
+            const key = apiKeyInput.value.trim();
+            const providerSelect = document.getElementById('providerSelect');
+            const modelInput = document.getElementById('modelInput');
+            if (!providerSelect) return;
+            if (key.startsWith('AIza') || (key.startsWith('AI') && key.length > 30)) {
+                // Looks like a Google Gemini key
+                providerSelect.value = 'gemini';
+                updateModelDropdown('gemini', 'gemini-3.5-flash');
+            } else if (key.startsWith('sk-ant-')) {
+                // Looks like an Anthropic key
+                providerSelect.value = 'anthropic';
+                updateModelDropdown('anthropic', 'claude-3-7-sonnet-20250219');
+            } else if (key.startsWith('sk-')) {
+                // Looks like an OpenAI-compatible key
+                providerSelect.value = 'openai';
+                updateModelDropdown('openai', 'gpt-4o-mini');
+            }
+        });
+    }
+
     const input = document.getElementById('toolInput');
     input?.addEventListener('input', updateInputCounter);
     const todayLabel = document.getElementById('todayLabel');
     if (todayLabel) todayLabel.textContent = new Intl.DateTimeFormat('en', { weekday: 'long', month: 'short', day: 'numeric' }).format(new Date());
 });
+
+// --- UI Helpers ---
+const modelsByProvider = {
+    gemini: ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-2.5-flash'],
+    anthropic: ['claude-3-7-sonnet-20250219', 'claude-3-5-sonnet-20241022', 'claude-3-5-haiku-20241022', 'claude-3-opus-20240229'],
+    openai: ['gpt-4o', 'gpt-4o-mini', 'o1-mini', 'o3-mini']
+};
+
+function updateModelDropdown(provider, selectedModel = null) {
+    const modelInput = document.getElementById('modelInput');
+    if (!modelInput) return;
+    const models = modelsByProvider[provider] || [];
+    modelInput.innerHTML = models.map(m => `<option value="${m}">${m}</option>`).join('');
+    if (selectedModel && models.includes(selectedModel)) {
+        modelInput.value = selectedModel;
+    }
+}
 
 // --- Tool Workspace Logic ---
 let currentTool = null;
@@ -185,9 +235,9 @@ async function executeTool(toolId, toolTitle) {
 
 function getAISettings() {
     return {
-        provider: localStorage.getItem('aiProvider') || 'gemini',
-        model: localStorage.getItem('aiModel') || 'gemini-2.0-flash',
-        apiKey: localStorage.getItem('geminiApiKey') || ''
+        provider: sessionStorage.getItem('aiProvider') || 'gemini',
+        model: sessionStorage.getItem('aiModel') || 'gemini-3.5-flash',
+        apiKey: sessionStorage.getItem('geminiApiKey') || ''
     };
 }
 
@@ -215,21 +265,47 @@ async function callAIAPI(toolId, input, settings) {
         systemPrompt = "You are a patient Socratic tutor. Explain the answer at the learner's level, show reasoning, identify misconceptions, and end with one short check-for-understanding question.";
     }
 
-    const isGemini = settings.provider === 'gemini';
-    const url = isGemini ? `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(settings.model)}:generateContent?key=${encodeURIComponent(settings.apiKey)}` : 'https://api.openai.com/v1/chat/completions';
-    const payload = isGemini ? {
-        system_instruction: { parts: [{ text: systemPrompt }] },
-        contents: [{ parts: [{ text: input }] }],
-        generationConfig: { responseMimeType: ['resume', 'flashcards', 'presentation', 'mindmap', 'quiz', 'planner'].includes(toolId) ? 'application/json' : 'text/plain' }
-    } : {
-        model: settings.model,
-        response_format: ['resume', 'flashcards', 'presentation', 'mindmap', 'quiz', 'planner'].includes(toolId) ? { type: 'json_object' } : undefined,
-        messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: input }]
-    };
+    const provider = settings.provider;
+    const jsonTools = ['resume', 'flashcards', 'presentation', 'mindmap', 'quiz', 'planner'];
+    const wantsJson = jsonTools.includes(toolId);
+    let url, payload, headers;
+
+    if (provider === 'gemini') {
+        url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(settings.model)}:generateContent?key=${encodeURIComponent(settings.apiKey)}`;
+        payload = {
+            system_instruction: { parts: [{ text: systemPrompt }] },
+            contents: [{ parts: [{ text: input }] }],
+            generationConfig: { responseMimeType: wantsJson ? 'application/json' : 'text/plain' }
+        };
+        headers = { 'Content-Type': 'application/json' };
+    } else if (provider === 'anthropic') {
+        url = 'https://api.anthropic.com/v1/messages';
+        payload = {
+            model: settings.model,
+            max_tokens: 4096,
+            system: systemPrompt,
+            messages: [{ role: 'user', content: input }]
+        };
+        headers = {
+            'Content-Type': 'application/json',
+            'x-api-key': settings.apiKey,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
+        };
+    } else {
+        // OpenAI-compatible
+        url = 'https://api.openai.com/v1/chat/completions';
+        payload = {
+            model: settings.model,
+            response_format: wantsJson ? { type: 'json_object' } : undefined,
+            messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: input }]
+        };
+        headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${settings.apiKey}` };
+    }
 
     const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(isGemini ? {} : { Authorization: `Bearer ${settings.apiKey}` }) },
+        headers,
         body: JSON.stringify(payload)
     });
 
@@ -239,7 +315,14 @@ async function callAIAPI(toolId, input, settings) {
     }
 
     const data = await response.json();
-    const textResult = isGemini ? data.candidates?.[0]?.content?.parts?.[0]?.text || '' : data.choices?.[0]?.message?.content || '';
+    let textResult;
+    if (provider === 'gemini') {
+        textResult = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    } else if (provider === 'anthropic') {
+        textResult = data.content?.[0]?.text || '';
+    } else {
+        textResult = data.choices?.[0]?.message?.content || '';
+    }
 
     // Parse JSON if flashcards
     if (['flashcards', 'presentation', 'mindmap', 'quiz', 'planner'].includes(toolId)) {

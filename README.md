@@ -10,9 +10,11 @@ and an OCR + AI notes summarizer.
 
 - **Frontend-only:** plain HTML/CSS/JavaScript with no build step, backend, or
   server-side secret management.
-- **Direct Gemini calls:** users add their own Gemini API key in Settings. The
-  key is stored in that browser's `localStorage` and sent directly to Google's
-  Generative Language API.
+- **Direct AI provider calls:** users add their own API key in Settings. The
+  provider and model are auto-detected from the key prefix (`AIza*` → Gemini,
+  `sk-ant-*` → Anthropic, `sk-*` → OpenAI). The key is stored in the browser's
+  `sessionStorage` (cleared when the tab closes) and sent directly to the
+  selected provider's API.
 - **Browser OCR:** the Photo Summarizer loads Tesseract.js from a CDN and runs
   recognition locally before sending extracted text to Gemini.
 - **Google Sheets:** the Sheets Dashboard can load JSON rows from a deployed
@@ -27,9 +29,13 @@ For local development:
 python -m http.server 8000
 ```
 
-Open `http://localhost:8000`, then add a key from
-https://aistudio.google.com/app/apikey in **Settings**. Never hard-code a key
-in the frontend.
+Open `http://localhost:8000`, then add your API key in **Settings**. The
+provider and model are auto-detected from the key prefix. Supported providers:
+- **Google Gemini** — keys starting with `AIza` (get one at https://aistudio.google.com/app/apikey)
+- **Anthropic (Claude)** — keys starting with `sk-ant-`
+- **OpenAI-compatible** — keys starting with `sk-`
+
+Never hard-code a key in the frontend.
 
 ## Run
 
@@ -51,15 +57,16 @@ static hosting, or Cloudflare Pages. The entry point is `index.html`.
 
 ## Notes on implementation choices
 
-- Every AI-driven tool sends a focused prompt directly to Gemini and expects
-  either plain text or a small JSON shape. JSON responses tolerate fenced
-  output before parsing.
+- Every AI-driven tool sends a focused prompt directly to the selected
+  provider (Gemini, Anthropic, or OpenAI) and expects either plain text or a
+  small JSON shape. JSON responses tolerate fenced output before parsing.
 - Every tool has its own controls, output treatment, loading state, empty
   state, and API error state while sharing one visual system.
 
 ## Troubleshooting
 
-- **Missing API key** — open Settings and add your own Gemini key.
+- **Missing API key** — open Settings and add your API key. The provider is
+  auto-detected from the key prefix.
 - **Sheets errors** — deploy the Apps Script Web App with access set to
   "Anyone" and use its `/exec` URL. The endpoint must return JSON and allow
   browser CORS requests.
