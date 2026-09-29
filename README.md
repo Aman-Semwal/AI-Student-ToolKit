@@ -48,7 +48,7 @@ static hosting, or Cloudflare Pages. The entry point is `index.html`.
 2. **Notes Generator** — paste a lecture or article and generate structured study notes.
 3. **Presentation Maker** — choose a slide count, generate slide cards with bullets and speaker notes, then download the outline.
 4. **Syllabus Mind Map** — generate a central topic with branches and child concepts.
-5. **Sheets Dashboard** — paste a deployed Google Apps Script Web App URL, load JSON rows, and ask AI to summarize, compare, or prioritize them.
+5. **Sheets Dashboard** — paste a deployed Google Apps Script Web App URL, load JSON rows, add a row using the detected columns, and ask AI to summarize, compare, or prioritize the updated dataset.
 6. **Quiz Generator** — generate multiple-choice questions, select answers, and check the score in place.
 7. **Doubt-Solving Tutor** — ask follow-ups in a persistent visual conversation with context included in each prompt.
 8. **Flashcards** — generate flip cards with previous/next navigation.
@@ -70,5 +70,10 @@ static hosting, or Cloudflare Pages. The entry point is `index.html`.
 - **Sheets errors** — deploy the Apps Script Web App with access set to
   "Anyone" and use its `/exec` URL. The endpoint must return JSON and allow
   browser CORS requests.
+- **Sheets add-row check** — load at least one row, enter a value in the
+  detected row fields, choose **Add row**, and confirm the new object appears
+  in the dataset prompt before running an analysis. This is a local browser
+  edit; persisting it back to Google Sheets requires a write-enabled Apps
+  Script endpoint, which is not part of the current read-only contract.
 - **OCR is slow on the first run** — Tesseract.js downloads its language model
   from a CDN once; later runs are faster.

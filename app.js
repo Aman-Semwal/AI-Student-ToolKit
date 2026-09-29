@@ -122,7 +122,7 @@ function updateModelDropdown(provider, selectedModel = null) {
 
 // --- Tool Workspace Logic ---
 let currentTool = null;
-const toolState = { tutorMessages: [], flashcards: [], flashcardIndex: 0, quizAnswers: {}, lastResumeInput: '' };
+const toolState = { tutorMessages: [], flashcards: [], flashcardIndex: 0, quizAnswers: {}, lastResumeInput: '', dashboardRows: [] };
 
 const toolConfigs = {
     'resume': { title: 'Resume Builder', icon: 'file-text', eyebrow: 'Career studio', description: 'Build a clear, confident first draft from the experience you already have.', label: 'Tell us about you', hint: 'Role, wins, experience, and what you want next.', placeholder: 'Example: I am a second-year CS student applying for a product design internship...', button: 'Build my resume', controls: ['Experience', 'Skills', 'Target role'] },
@@ -379,8 +379,9 @@ function setupToolControls(toolId, config) {
         controls.innerHTML = '<label class="upload-control"><i class="ti ti-upload"></i><span>Upload a photo of your notes</span><input type="file" id="photoUpload" accept="image/*"></label><small id="ocrStatus">OCR runs locally in your browser.</small>';
         document.getElementById('photoUpload').addEventListener('change', runPhotoOCR);
     } else if (toolId === 'dashboard_data') {
-        controls.innerHTML = '<div class="sheets-connect"><input class="custom-input" data-setting="sheetsUrl" placeholder="Google Sheets Web App URL"><button type="button" class="secondary-action" id="loadSheetsBtn"><i class="ti ti-refresh"></i> Load rows</button></div><div class="chip-row">' + config.controls.map((control, index) => `<button type="button" class="control-chip${index === 0 ? ' active' : ''}">${control}</button>`).join('') + '</div>';
+        controls.innerHTML = '<div class="sheets-connect"><input class="custom-input" data-setting="sheetsUrl" placeholder="Google Sheets Web App URL"><button type="button" class="secondary-action" id="loadSheetsBtn"><i class="ti ti-refresh"></i> Load rows</button></div><div class="row-editor" id="rowEditor"><div class="row-editor-heading"><span>Add a row</span><small id="rowEditorHint">Load rows to see the available columns.</small></div><div class="row-fields" id="rowFields"></div><button type="button" class="secondary-action" id="addRowBtn" disabled><i class="ti ti-plus"></i> Add row</button></div><div class="chip-row">' + config.controls.map((control, index) => `<button type="button" class="control-chip${index === 0 ? ' active' : ''}">${control}</button>`).join('') + '</div>';
         document.getElementById('loadSheetsBtn').addEventListener('click', loadSheetsData);
+        document.getElementById('addRowBtn').addEventListener('click', addDashboardRow);
     } else {
         controls.innerHTML = config.controls.map((control, index) => `<button type="button" class="control-chip${index === 0 ? ' active' : ''}">${control}</button>`).join('');
     }
@@ -477,7 +478,10 @@ async function loadSheetsData() {
         const response = await fetch(url);
         if (!response.ok) throw new Error('The Sheets Web App did not respond.');
         const data = await response.json();
-        document.getElementById('toolInput').value = JSON.stringify(data, null, 2);
+        toolState.dashboardRows = normalizeDashboardRows(data);
+        if (!toolState.dashboardRows.length) throw new Error('The Sheets response did not contain any rows.');
+        renderDashboardRowEditor();
+        syncDashboardInput();
         updateInputCounter();
         showToast('Rows loaded. Choose an analysis mode and run it.');
     } catch (error) {
@@ -486,6 +490,38 @@ async function loadSheetsData() {
         button.disabled = false;
         button.innerHTML = '<i class="ti ti-refresh"></i> Load rows';
     }
+}
+
+function normalizeDashboardRows(data) {
+    if (Array.isArray(data)) return data.filter(row => row && typeof row === 'object' && !Array.isArray(row));
+    if (Array.isArray(data?.rows)) return data.rows.filter(row => row && typeof row === 'object' && !Array.isArray(row));
+    return data && typeof data === 'object' ? [data] : [];
+}
+
+function renderDashboardRowEditor() {
+    const fields = document.getElementById('rowFields');
+    const hint = document.getElementById('rowEditorHint');
+    const addButton = document.getElementById('addRowBtn');
+    if (!fields || !hint || !addButton) return;
+    const columns = [...new Set(toolState.dashboardRows.flatMap(row => Object.keys(row)))];
+    fields.innerHTML = columns.map(column => `<input class="custom-input" data-row-field="${escapeHtml(column)}" placeholder="${escapeHtml(column)}" aria-label="${escapeHtml(column)}">`).join('');
+    hint.innerText = `${columns.length} column${columns.length === 1 ? '' : 's'} ready`;
+    addButton.disabled = columns.length === 0;
+}
+
+function addDashboardRow() {
+    const fields = [...document.querySelectorAll('[data-row-field]')];
+    const row = Object.fromEntries(fields.map(field => [field.dataset.rowField, field.value.trim()]));
+    if (!Object.values(row).some(Boolean)) { showToast('Enter at least one value before adding the row.', true); return; }
+    toolState.dashboardRows.push(row);
+    fields.forEach(field => { field.value = ''; });
+    syncDashboardInput();
+    updateInputCounter();
+    showToast('Row added to the dataset.');
+}
+
+function syncDashboardInput() {
+    document.getElementById('toolInput').value = JSON.stringify(toolState.dashboardRows, null, 2);
 }
 
 function downloadText(filename, content) { const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([content], { type: 'text/plain' })); link.download = filename; link.click(); URL.revokeObjectURL(link.href); }
