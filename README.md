@@ -5,7 +5,6 @@
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Open%20App-2ea44f?logo=github)](https://aman-semwal.github.io/AI-Student-ToolKit/)
 [![GitHub Pages](https://img.shields.io/badge/Hosted%20on-GitHub%20Pages-222?logo=github)](https://pages.github.com/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-46.7%25-f7df1e?logo=javascript&logoColor=222)](https://github.com/Aman-Semwal/AI-Student-ToolKit)
-[![License](https://img.shields.io/badge/license-not%20specified-lightgrey)](https://github.com/Aman-Semwal/AI-Student-ToolKit)
 
 **Try it live:** [aman-semwal.github.io/AI-Student-ToolKit](https://aman-semwal.github.io/AI-Student-ToolKit/)
 
